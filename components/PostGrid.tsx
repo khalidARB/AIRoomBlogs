@@ -40,19 +40,23 @@ export default function PostGrid({ posts }: PostGridProps) {
               }`}
             >
               <div>
-                {/* Image Container with Hover Zoom */}
-                <Link
-                  href={`/blog/${post.slug}`}
-                  className="block overflow-hidden rounded-2xl mb-6 relative aspect-[16/10] bg-gray-100 dark:bg-neutral-800"
-                >
-                  <motion.img
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                    src={post.featuredImage.url}
-                    alt={post.featuredImage.altText || post.title}
-                    className="w-full h-full object-cover rounded-2xl"
-                  />
-                  <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
+                {/* Image Container & Category Badges (Sibling Links to prevent <a> nesting) */}
+                <div className="relative mb-6">
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="block overflow-hidden rounded-2xl aspect-[16/10] bg-gray-100 dark:bg-neutral-800"
+                  >
+                    <motion.img
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                      src={post.featuredImage.url}
+                      alt={post.featuredImage.altText || post.title}
+                      className="w-full h-full object-cover rounded-2xl"
+                    />
+                  </Link>
+
+                  {/* Category Badges Overlay */}
+                  <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10 pointer-events-auto">
                     {post.categories.map((cat, cIdx) => (
                       <Link
                         key={cIdx}
@@ -63,7 +67,7 @@ export default function PostGrid({ posts }: PostGridProps) {
                       </Link>
                     ))}
                   </div>
-                </Link>
+                </div>
 
                 {/* Article Meta */}
                 <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 mb-3 font-medium">
