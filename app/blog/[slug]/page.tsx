@@ -6,6 +6,7 @@ import ShareButtons from '@/components/ShareButtons';
 import ReadingProgressBar from '@/components/ReadingProgressBar';
 import TableOfContents from '@/components/TableOfContents';
 import ArticleBody from '@/components/ArticleBody';
+import NewsletterBox from '@/components/NewsletterBox';
 import { getPostBySlug, getAllPosts, getCategories, getMenu } from '@/lib/wordpress';
 import { Calendar, Clock, ArrowLeft, ArrowUpRight, Sparkles } from 'lucide-react';
 
@@ -195,22 +196,7 @@ export default async function SingleArticlePage({ params }: PageProps) {
               </div>
 
               {/* Bottom Newsletter / Promotion Soft Box */}
-              <div className="mt-16 p-8 sm:p-10 bg-[#BEF264]/15 rounded-3xl border border-[#BEF264]/40 shadow-soft flex flex-col sm:flex-row items-center justify-between gap-6">
-                <div>
-                  <h3 className="text-xl sm:text-2xl font-extrabold text-[#111827] mb-2">
-                    Enjoyed this publication?
-                  </h3>
-                  <p className="text-gray-600 text-sm">
-                    Subscribe to receive strategic articles straight to your inbox.
-                  </p>
-                </div>
-                <Link
-                  href="#newsletter"
-                  className="bg-[#BEF264] hover:bg-[#a3e635] text-[#111827] font-extrabold text-sm px-6 py-3.5 rounded-full transition-all hover:scale-105 shadow-soft whitespace-nowrap"
-                >
-                  Subscribe Free
-                </Link>
-              </div>
+              <NewsletterBox />
             </div>
           </div>
         </article>

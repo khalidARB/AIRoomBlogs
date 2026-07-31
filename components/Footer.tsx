@@ -1,7 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
-import { Send } from 'lucide-react';
+import { Send, Check, Loader2 } from 'lucide-react';
 import { MenuItem, Category, MOCK_FOOTER_MENU, MOCK_CATEGORIES } from '@/lib/wordpress';
 
 interface FooterProps {
@@ -13,8 +14,39 @@ export default function Footer({
   navItems = MOCK_FOOTER_MENU,
   categories = MOCK_CATEGORIES,
 }: FooterProps) {
-  // Filter categories to omit "All Articles" pill in footer column if needed
-  const displayCategories = categories.filter((c) => c.slug !== 'all');
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setStatus('loading');
+    setMessage('');
+
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        setStatus('success');
+        setMessage(data.message || 'Thank you for subscribing to AiRooms!');
+        setEmail('');
+      } else {
+        setStatus('error');
+        setMessage(data.message || 'Subscription failed. Please try again.');
+      }
+    } catch {
+      setStatus('error');
+      setMessage('Network error. Please try again.');
+    }
+  };
 
   return (
     <footer className="bg-[#0A0A0A] text-white pt-16 pb-12 overflow-hidden border-t border-gray-800 relative">
@@ -38,19 +70,42 @@ export default function Footer({
               A high-performance publication platform powered by WordPress WPGraphQL and Next.js static site regeneration.
             </p>
             {/* Newsletter Input Box */}
-            <div className="flex items-center bg-gray-900/90 border border-gray-800 rounded-full p-1.5 max-w-sm">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="bg-transparent text-sm text-white px-4 py-2 focus:outline-none w-full placeholder-gray-500"
-              />
-              <button
-                aria-label="Subscribe to newsletter"
-                className="bg-[#BEF264] hover:bg-[#a3e635] text-[#111827] p-2.5 rounded-full transition-transform active:scale-95 cursor-pointer"
-              >
-                <Send className="w-4 h-4" />
-              </button>
-            </div>
+            <form onSubmit={handleSubmit} className="max-w-sm">
+              <div className="flex items-center bg-gray-900/90 border border-gray-800 focus-within:border-[#BEF264] rounded-full p-1.5 transition-all">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  disabled={status === 'loading' || status === 'success'}
+                  className="bg-transparent text-sm text-white px-4 py-2 focus:outline-none w-full placeholder-gray-500"
+                />
+                <button
+                  type="submit"
+                  disabled={status === 'loading' || status === 'success'}
+                  aria-label="Subscribe to newsletter"
+                  className="bg-[#BEF264] hover:bg-[#a3e635] text-[#111827] p-2.5 rounded-full transition-transform active:scale-95 cursor-pointer disabled:opacity-60 shrink-0"
+                >
+                  {status === 'loading' ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : status === 'success' ? (
+                    <Check className="w-4 h-4 text-green-900" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
+
+              {message && (
+                <p
+                  className={`text-xs mt-3 font-semibold px-2 transition-all ${
+                    status === 'success' ? 'text-[#BEF264]' : 'text-red-400'
+                  }`}
+                >
+                  {message}
+                </p>
+              )}
+            </form>
           </div>
 
           {/* Column 1: Dynamic Navigation (Managed via WordPress Menus) */}
@@ -69,15 +124,15 @@ export default function Footer({
             </ul>
           </div>
 
-          {/* Column 2: Dynamic Categories (Managed via WordPress Dashboard) */}
+          {/* Column 2: Dynamic Categories (Managed via WordPress Categories) */}
           <div>
             <h4 className="text-xs font-extrabold text-gray-300 uppercase tracking-wider mb-5">
               Categories
             </h4>
             <ul className="space-y-3 text-sm text-gray-400">
-              {displayCategories.map((cat) => (
-                <li key={cat.id}>
-                  <Link href={`/?category=${cat.slug}`} className="hover:text-[#BEF264] transition-colors">
+              {categories.map((cat) => (
+                <li key={cat.id || cat.slug}>
+                  <Link href="/" className="hover:text-[#BEF264] transition-colors">
                     {cat.name}
                   </Link>
                 </li>
@@ -85,30 +140,25 @@ export default function Footer({
             </ul>
           </div>
 
-          {/* Column 3: Social & Legal */}
+          {/* Column 3: Legal & Resources */}
           <div>
             <h4 className="text-xs font-extrabold text-gray-300 uppercase tracking-wider mb-5">
-              Connect
+              Legal
             </h4>
             <ul className="space-y-3 text-sm text-gray-400">
               <li>
-                <a href="https://twitter.com" target="_blank" rel="noreferrer" className="hover:text-[#BEF264] transition-colors">
-                  Twitter / X
-                </a>
-              </li>
-              <li>
-                <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-[#BEF264] transition-colors">
-                  GitHub
-                </a>
-              </li>
-              <li>
-                <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="hover:text-[#BEF264] transition-colors">
-                  LinkedIn
-                </a>
+                <Link href="#" className="hover:text-[#BEF264] transition-colors">
+                  Privacy Policy
+                </Link>
               </li>
               <li>
                 <Link href="#" className="hover:text-[#BEF264] transition-colors">
-                  Privacy Policy
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="hover:text-[#BEF264] transition-colors">
+                  Cookie Settings
                 </Link>
               </li>
             </ul>
