@@ -1,78 +1,61 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { Metadata } from 'next';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { getPostBySlug, getAllPosts, getCategories, getMenu, Post, Category, MenuItem } from '@/lib/wordpress';
-import { motion } from 'motion/react';
-import {
-  Calendar,
-  Clock,
-  ArrowLeft,
-  Share2,
-  Link as LinkIcon,
-  Check,
-  ArrowUpRight,
-  Sparkles,
-} from 'lucide-react';
+import ShareButtons from '@/components/ShareButtons';
+import { getPostBySlug, getAllPosts, getCategories, getMenu } from '@/lib/wordpress';
+import { Calendar, Clock, ArrowLeft, ArrowUpRight, Sparkles } from 'lucide-react';
 
-export default function SingleArticlePage() {
-  const params = useParams();
-  const slug = params?.slug as string;
+export const revalidate = 60; // ISR revalidation every 60 seconds
 
-  const [post, setPost] = useState<Post | undefined>(undefined);
-  const [allPosts, setAllPosts] = useState<Post[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [headerMenu, setHeaderMenu] = useState<MenuItem[]>([]);
-  const [footerMenu, setFooterMenu] = useState<MenuItem[]>([]);
-  const [copied, setCopied] = useState(false);
-  const [loading, setLoading] = useState(true);
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
 
-  useEffect(() => {
-    async function loadData() {
-      if (!slug) return;
-      const [fetchedPost, postsList, fetchedCats, hMenu, fMenu] = await Promise.all([
-        getPostBySlug(slug),
-        getAllPosts(),
-        getCategories(),
-        getMenu('header'),
-        getMenu('footer'),
-      ]);
-      setPost(fetchedPost);
-      setAllPosts(postsList);
-      setCategories(fetchedCats);
-      setHeaderMenu(hMenu);
-      setFooterMenu(fMenu);
-      setLoading(false);
-    }
-    loadData();
-  }, [slug]);
+export async function generateStaticParams() {
+  const posts = await getAllPosts();
+  return posts.map((post) => ({
+    slug: post.slug,
+  }));
+}
 
-  const handleCopyLink = () => {
-    if (typeof window !== 'undefined') {
-      navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  const post = await getPostBySlug(resolvedParams.slug);
 
-  if (loading) {
-    return (
-      <div className="min-h-[100dvh] bg-[#F9FAFB] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-full border-4 border-gray-200 border-t-[#BEF264] animate-spin"></div>
-          <span className="text-sm font-semibold text-gray-600">Loading Article...</span>
-        </div>
-      </div>
-    );
+  if (!post) {
+    return {
+      title: 'Article Not Found — AiRooms',
+    };
   }
+
+  return {
+    title: `${post.title} — AiRooms`,
+    description: post.excerpt,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      images: [{ url: post.featuredImage.url }],
+    },
+  };
+}
+
+export default async function SingleArticlePage({ params }: PageProps) {
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug;
+
+  const [post, allPosts, categories, headerMenu, footerMenu] = await Promise.all([
+    getPostBySlug(slug),
+    getAllPosts(),
+    getCategories(),
+    getMenu('header'),
+    getMenu('footer'),
+  ]);
 
   if (!post) {
     return (
       <div className="min-h-[100dvh] bg-[#F9FAFB] flex flex-col justify-between">
-        <Header />
+        <Header navItems={headerMenu} />
         <div className="max-w-4xl mx-auto px-6 py-40 text-center">
           <h1 className="text-4xl font-extrabold text-[#111827] mb-4">Article Not Found</h1>
           <p className="text-gray-600 mb-8">The requested publication could not be found.</p>
@@ -83,7 +66,7 @@ export default function SingleArticlePage() {
             <ArrowLeft className="w-4 h-4" /> Back to Home
           </Link>
         </div>
-        <Footer />
+        <Footer navItems={footerMenu} categories={categories} />
       </div>
     );
   }
@@ -109,12 +92,7 @@ export default function SingleArticlePage() {
 
         {/* Minimalist Article Header */}
         <article className="max-w-6xl mx-auto px-6 sm:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="max-w-4xl mb-10"
-          >
+          <div className="max-w-4xl mb-10">
             {/* Category Badges */}
             <div className="flex flex-wrap items-center gap-2 mb-6">
               {post.categories.map((cat, idx) => (
@@ -136,21 +114,16 @@ export default function SingleArticlePage() {
             <p className="text-gray-600 text-lg sm:text-xl leading-relaxed">
               {post.excerpt}
             </p>
-          </motion.div>
+          </div>
 
           {/* Featured Image */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            className="w-full aspect-[21/9] rounded-3xl overflow-hidden mb-16 shadow-soft-lg border border-gray-200/80 bg-gray-100"
-          >
+          <div className="w-full aspect-[21/9] rounded-3xl overflow-hidden mb-16 shadow-soft-lg border border-gray-200/80 bg-gray-100">
             <img
               src={post.featuredImage.url}
               alt={post.featuredImage.altText || post.title}
               className="w-full h-full object-cover rounded-3xl"
             />
-          </motion.div>
+          </div>
 
           {/* Main Layout: Sticky Desktop Sidebar + Reading Column */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 relative">
@@ -192,42 +165,7 @@ export default function SingleArticlePage() {
                 <div className="h-px bg-gray-100"></div>
 
                 {/* Social Sharing Actions */}
-                <div>
-                  <h5 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                    <Share2 className="w-3.5 h-3.5" /> Share Publication
-                  </h5>
-                  <div className="flex items-center gap-2">
-                    <a
-                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label="Share on Twitter"
-                      className="w-9 h-9 rounded-full bg-gray-100 hover:bg-[#BEF264] text-[#111827] flex items-center justify-center transition-all duration-200 hover:scale-105"
-                    >
-                      <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                      </svg>
-                    </a>
-                    <a
-                      href={`https://www.linkedin.com/sharing/share-offsite/`}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label="Share on LinkedIn"
-                      className="w-9 h-9 rounded-full bg-gray-100 hover:bg-[#BEF264] text-[#111827] flex items-center justify-center transition-all duration-200 hover:scale-105"
-                    >
-                      <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
-                      </svg>
-                    </a>
-                    <button
-                      onClick={handleCopyLink}
-                      aria-label="Copy article link"
-                      className="w-9 h-9 rounded-full bg-gray-100 hover:bg-[#BEF264] text-[#111827] flex items-center justify-center transition-all duration-200 hover:scale-105 cursor-pointer"
-                    >
-                      {copied ? <Check className="w-4 h-4 text-green-700" /> : <LinkIcon className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
+                <ShareButtons title={post.title} />
               </div>
             </aside>
 

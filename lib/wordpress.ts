@@ -222,7 +222,7 @@ export async function fetchGraphQL<T>(query: string, variables: Record<string, a
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ query, variables }),
-      cache: 'no-store', // Ensures menu & post updates in WP Dashboard reflect instantly
+      next: { revalidate: 60 }, // Incremental Static Regeneration (ISR) edge caching
     });
 
     if (!res.ok) {
