@@ -342,6 +342,38 @@ export async function getCategories(): Promise<Category[]> {
   return [{ id: 'cat-all', name: 'All Articles', slug: 'all' }, ...fetched];
 }
 
+export const slugify = (text: string) =>
+  text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+export async function getPostsByCategory(categorySlug: string): Promise<Post[]> {
+  const posts = await getAllPosts();
+  if (categorySlug === 'all') return posts;
+  return posts.filter((p) => p.categories.some((c) => c.slug === categorySlug));
+}
+
+export async function getCategoryBySlug(categorySlug: string): Promise<Category | undefined> {
+  const categories = await getCategories();
+  return categories.find((c) => c.slug === categorySlug);
+}
+
+export async function getPostsByAuthor(authorSlug: string): Promise<Post[]> {
+  const posts = await getAllPosts();
+  return posts.filter((p) => slugify(p.author.name) === authorSlug);
+}
+
+export async function getAuthorBySlug(authorSlug: string): Promise<{ name: string; slug: string; role: string; avatarUrl: string; bio: string } | undefined> {
+  const posts = await getAllPosts();
+  const authorPost = posts.find((p) => slugify(p.author.name) === authorSlug);
+  if (!authorPost) return undefined;
+  return {
+    name: authorPost.author.name,
+    slug: slugify(authorPost.author.name),
+    role: authorPost.author.role,
+    avatarUrl: authorPost.author.avatarUrl,
+    bio: `Author and contributor at AiRooms. Writing strategic insights on ${authorPost.categories[0]?.name || 'technology'}, web architecture, and design engineering.`,
+  };
+}
+
 export async function getMenu(menuType: string = 'header'): Promise<MenuItem[]> {
   const query = `
     query GetAllMenus {

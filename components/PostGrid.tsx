@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'motion/react';
 import { ArrowUpRight, Clock, Calendar } from 'lucide-react';
-import { Post } from '@/lib/wordpress';
+import { Post, slugify } from '@/lib/wordpress';
 
 interface PostGridProps {
   posts: Post[];
@@ -52,14 +52,15 @@ export default function PostGrid({ posts }: PostGridProps) {
                     alt={post.featuredImage.altText || post.title}
                     className="w-full h-full object-cover rounded-2xl"
                   />
-                  <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+                  <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
                     {post.categories.map((cat, cIdx) => (
-                      <span
+                      <Link
                         key={cIdx}
-                        className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md text-[#111827] dark:text-white text-xs font-bold px-3 py-1 rounded-full border border-gray-200/50 dark:border-neutral-700/50 shadow-sm"
+                        href={`/category/${cat.slug}`}
+                        className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md text-[#111827] dark:text-white text-xs font-bold px-3 py-1 rounded-full border border-gray-200/50 dark:border-neutral-700/50 shadow-sm hover:scale-105 transition-transform"
                       >
                         {cat.name}
-                      </span>
+                      </Link>
                     ))}
                   </div>
                 </Link>
@@ -96,14 +97,19 @@ export default function PostGrid({ posts }: PostGridProps) {
 
               {/* Card Footer: Author & Action Button */}
               <div className="pt-4 border-t border-gray-100 dark:border-neutral-800 flex items-center justify-between mt-auto">
-                <div className="flex items-center gap-3">
+                <Link
+                  href={`/author/${slugify(post.author.name)}`}
+                  className="flex items-center gap-3 group/author"
+                >
                   <img
                     src={post.author.avatarUrl}
                     alt={post.author.name}
-                    className="w-9 h-9 rounded-full object-cover border border-gray-200 dark:border-neutral-700"
+                    className="w-9 h-9 rounded-full object-cover border border-gray-200 dark:border-neutral-700 group-hover/author:scale-105 transition-transform"
                   />
-                  <span className="text-xs font-bold text-gray-800 dark:text-gray-200">{post.author.name}</span>
-                </div>
+                  <span className="text-xs font-bold text-gray-800 dark:text-gray-200 group-hover/author:text-lime-500 transition-colors">
+                    {post.author.name}
+                  </span>
+                </Link>
 
                 <Link
                   href={`/blog/${post.slug}`}

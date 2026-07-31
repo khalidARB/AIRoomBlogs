@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'motion/react';
 import { ArrowUpRight, Clock, Calendar } from 'lucide-react';
-import { Post } from '@/lib/wordpress';
+import { Post, slugify } from '@/lib/wordpress';
 
 interface HeroFeaturedProps {
   post: Post;
@@ -32,12 +32,13 @@ export default function HeroFeatured({ post }: HeroFeaturedProps) {
                   Featured
                 </span>
                 {post.categories.map((cat, idx) => (
-                  <span
+                  <Link
                     key={idx}
-                    className="bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-gray-300 text-xs font-semibold px-3 py-1.5 rounded-full border border-gray-200 dark:border-neutral-700"
+                    href={`/category/${cat.slug}`}
+                    className="bg-gray-100 dark:bg-neutral-800 hover:bg-[#BEF264] dark:hover:bg-[#BEF264] text-gray-700 dark:text-gray-300 hover:text-[#111827] dark:hover:text-[#111827] text-xs font-semibold px-3 py-1.5 rounded-full border border-gray-200 dark:border-neutral-700 transition-all duration-200 hover:scale-105"
                   >
                     {cat.name}
-                  </span>
+                  </Link>
                 ))}
               </div>
 
@@ -56,17 +57,22 @@ export default function HeroFeatured({ post }: HeroFeaturedProps) {
 
             {/* Author Meta & Action */}
             <div className="pt-6 border-t border-gray-100 dark:border-neutral-800 flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
+              <Link
+                href={`/author/${slugify(post.author.name)}`}
+                className="flex items-center gap-3 group/author"
+              >
                 <img
                   src={post.author.avatarUrl}
                   alt={post.author.name}
-                  className="w-11 h-11 rounded-full object-cover border-2 border-white dark:border-neutral-700 shadow-sm"
+                  className="w-11 h-11 rounded-full object-cover border-2 border-white dark:border-neutral-700 shadow-sm group-hover/author:scale-105 transition-transform"
                 />
                 <div>
-                  <h4 className="text-sm font-bold text-[#111827] dark:text-white">{post.author.name}</h4>
+                  <h4 className="text-sm font-bold text-[#111827] dark:text-white group-hover/author:text-lime-500 transition-colors">
+                    {post.author.name}
+                  </h4>
                   <p className="text-xs text-gray-500 dark:text-gray-400">{post.author.role}</p>
                 </div>
-              </div>
+              </Link>
 
               <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 font-medium">
                 <span className="flex items-center gap-1.5">

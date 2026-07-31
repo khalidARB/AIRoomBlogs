@@ -7,7 +7,7 @@ import ReadingProgressBar from '@/components/ReadingProgressBar';
 import TableOfContents from '@/components/TableOfContents';
 import ArticleBody from '@/components/ArticleBody';
 import NewsletterBox from '@/components/NewsletterBox';
-import { getPostBySlug, getAllPosts, getCategories, getMenu } from '@/lib/wordpress';
+import { getPostBySlug, getAllPosts, getCategories, getMenu, slugify } from '@/lib/wordpress';
 import { Calendar, Clock, ArrowLeft, ArrowUpRight, Sparkles } from 'lucide-react';
 
 export const revalidate = 60; // ISR revalidation every 60 seconds
@@ -103,12 +103,13 @@ export default async function SingleArticlePage({ params }: PageProps) {
             {/* Category Badges */}
             <div className="flex flex-wrap items-center gap-2 mb-6">
               {post.categories.map((cat, idx) => (
-                <span
+                <Link
                   key={idx}
-                  className="bg-[#BEF264] text-[#111827] text-xs font-extrabold px-3.5 py-1 rounded-full shadow-xs"
+                  href={`/category/${cat.slug}`}
+                  className="bg-[#BEF264] text-[#111827] text-xs font-extrabold px-3.5 py-1 rounded-full shadow-xs hover:scale-105 transition-transform"
                 >
                   {cat.name}
-                </span>
+                </Link>
               ))}
             </div>
 
@@ -139,17 +140,22 @@ export default async function SingleArticlePage({ params }: PageProps) {
               <div className="lg:sticky lg:top-28 flex flex-col gap-6">
                 {/* Author Information Card */}
                 <div className="bg-white dark:bg-neutral-900 p-6 rounded-3xl border border-gray-200/80 dark:border-neutral-800 shadow-soft flex flex-col gap-4">
-                  <div className="flex items-center gap-3">
+                  <Link
+                    href={`/author/${slugify(post.author.name)}`}
+                    className="flex items-center gap-3 group/author"
+                  >
                     <img
                       src={post.author.avatarUrl}
                       alt={post.author.name}
-                      className="w-12 h-12 rounded-full object-cover border-2 border-gray-100 dark:border-neutral-800 shadow-sm"
+                      className="w-12 h-12 rounded-full object-cover border-2 border-gray-100 dark:border-neutral-800 shadow-sm group-hover/author:scale-105 transition-transform"
                     />
                     <div>
-                      <h4 className="text-sm font-bold text-[#111827] dark:text-white">{post.author.name}</h4>
+                      <h4 className="text-sm font-bold text-[#111827] dark:text-white group-hover/author:text-lime-500 transition-colors">
+                        {post.author.name}
+                      </h4>
                       <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{post.author.role}</p>
                     </div>
-                  </div>
+                  </Link>
 
                   <div className="h-px bg-gray-100 dark:bg-neutral-800"></div>
 

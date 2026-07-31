@@ -132,7 +132,7 @@ export default function Footer({
             <ul className="space-y-3 text-sm text-gray-400">
               {categories.map((cat) => (
                 <li key={cat.id || cat.slug}>
-                  <Link href="/" className="hover:text-[#BEF264] transition-colors">
+                  <Link href={`/category/${cat.slug}`} className="hover:text-[#BEF264] transition-colors">
                     {cat.name}
                   </Link>
                 </li>
