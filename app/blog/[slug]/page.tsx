@@ -87,7 +87,7 @@ export default async function SingleArticlePage({ params }: PageProps) {
 
       <main className="flex-grow pt-32 pb-24">
         {/* Top Breadcrumb Nav */}
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 mb-8">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 mb-8">
           <Link
             href="/"
             className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
@@ -98,8 +98,8 @@ export default async function SingleArticlePage({ params }: PageProps) {
         </div>
 
         {/* Minimalist Article Header */}
-        <article className="max-w-6xl mx-auto px-6 sm:px-8">
-          <div className="max-w-4xl mb-10">
+        <article className="max-w-7xl mx-auto px-6 sm:px-8">
+          <div className="max-w-5xl mb-10">
             {/* Category Badges */}
             <div className="flex flex-wrap items-center gap-2 mb-6">
               {post.categories.map((cat, idx) => (
@@ -187,8 +187,8 @@ export default async function SingleArticlePage({ params }: PageProps) {
               </div>
             </aside>
 
-            {/* Reading Column (Narrow max 68ch UX) */}
-            <div className="lg:col-span-8 max-w-[68ch]">
+            {/* Reading Column */}
+            <div className="lg:col-span-8 w-full">
               <ArticleBody content={post.content} />
 
               {/* In-line Embedded Visual Element Showcase */}
@@ -209,7 +209,7 @@ export default async function SingleArticlePage({ params }: PageProps) {
 
         {/* Read Next Section */}
         {readNextPosts.length > 0 && (
-          <section className="max-w-6xl mx-auto px-6 sm:px-8 pt-24 mt-16 border-t border-gray-200/80 dark:border-neutral-800">
+          <section className="max-w-7xl mx-auto px-6 sm:px-8 pt-24 mt-16 border-t border-gray-200/80 dark:border-neutral-800">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl sm:text-3xl font-extrabold text-[#111827] dark:text-white">
                 Read Next
