@@ -13,13 +13,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Extract unique author slugs
   const authorSlugs = Array.from(new Set(posts.map((p) => slugify(p.author.name))));
 
-  // Homepage entry
+  // Static entries
   const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1.0,
+    },
+    {
+      url: `${baseUrl}/about`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.9,
     },
   ];
 
