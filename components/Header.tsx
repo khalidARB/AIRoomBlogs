@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Menu as MenuIcon, X, Search, ArrowUpRight } from 'lucide-react';
 import { MenuItem, Post, MOCK_HEADER_MENU } from '@/lib/wordpress';
 import SearchModal from '@/components/SearchModal';
+import ThemeToggle from '@/components/ThemeToggle';
 
 interface HeaderProps {
   navItems?: MenuItem[];
@@ -64,29 +65,33 @@ export default function Header({ navItems = MOCK_HEADER_MENU, posts }: HeaderPro
             ))}
           </nav>
 
-          {/* Desktop Instant Search Trigger */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* Desktop Instant Search Trigger & Theme Toggle */}
+          <div className="hidden md:flex items-center gap-3">
             <button
               onClick={() => setSearchModalOpen(true)}
               aria-label="Search articles"
-              className="inline-flex items-center gap-3 bg-white hover:bg-gray-50 text-gray-600 hover:text-gray-900 font-medium text-xs px-4 py-2.5 rounded-full border border-gray-200 shadow-soft transition-all duration-200 hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
+              className="inline-flex items-center gap-3 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-800 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium text-xs px-4 py-2.5 rounded-full border border-gray-200 dark:border-neutral-800 shadow-soft transition-all duration-200 hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
             >
               <Search className="w-4 h-4 text-gray-400" />
               <span>Search articles...</span>
-              <kbd className="hidden lg:inline-block bg-gray-100 border border-gray-200 px-1.5 py-0.5 rounded text-[10px] font-mono text-gray-500">
+              <kbd className="hidden lg:inline-block bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 px-1.5 py-0.5 rounded text-[10px] font-mono text-gray-500 dark:text-gray-400">
                 ⌘K
               </kbd>
             </button>
+
+            <ThemeToggle />
           </div>
 
-          {/* Mobile Right Controls: Search Icon + Hamburger Toggle */}
+          {/* Mobile Right Controls: Theme Toggle + Search Icon + Hamburger Toggle */}
           <div className="flex items-center gap-2 md:hidden">
+            <ThemeToggle />
+
             <button
               onClick={() => setSearchModalOpen(true)}
               aria-label="Search articles"
-              className="w-11 h-11 rounded-2xl bg-white border border-gray-200 flex items-center justify-center text-gray-900 shadow-soft active:scale-95 transition-transform"
+              className="w-11 h-11 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 flex items-center justify-center text-gray-900 dark:text-white shadow-soft active:scale-95 transition-transform"
             >
-              <Search className="w-5 h-5 text-gray-700" />
+              <Search className="w-5 h-5 text-gray-700 dark:text-gray-300" />
             </button>
 
             <button
