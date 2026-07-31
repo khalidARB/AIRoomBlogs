@@ -3,16 +3,19 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
-import { Menu as MenuIcon, X, ArrowUpRight, Sparkles } from 'lucide-react';
-import { MenuItem, MOCK_HEADER_MENU } from '@/lib/wordpress';
+import { Menu as MenuIcon, X, Search, ArrowUpRight } from 'lucide-react';
+import { MenuItem, Post, MOCK_HEADER_MENU } from '@/lib/wordpress';
+import SearchModal from '@/components/SearchModal';
 
 interface HeaderProps {
   navItems?: MenuItem[];
+  posts?: Post[];
 }
 
-export default function Header({ navItems = MOCK_HEADER_MENU }: HeaderProps) {
+export default function Header({ navItems = MOCK_HEADER_MENU, posts }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,25 +64,39 @@ export default function Header({ navItems = MOCK_HEADER_MENU }: HeaderProps) {
             ))}
           </nav>
 
-          {/* Right Action Button */}
+          {/* Desktop Instant Search Trigger */}
           <div className="hidden md:flex items-center gap-4">
-            <Link
-              href="#newsletter"
-              className="inline-flex items-center gap-2 bg-[#BEF264] hover:bg-[#a3e635] text-[#111827] font-semibold text-sm px-6 py-3 rounded-full transition-all duration-200 hover:scale-[1.03] active:scale-[0.98] shadow-soft shadow-lime-glow"
+            <button
+              onClick={() => setSearchModalOpen(true)}
+              aria-label="Search articles"
+              className="inline-flex items-center gap-3 bg-white hover:bg-gray-50 text-gray-600 hover:text-gray-900 font-medium text-xs px-4 py-2.5 rounded-full border border-gray-200 shadow-soft transition-all duration-200 hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
             >
-              <span>Get Started</span>
-              <ArrowUpRight className="w-4 h-4" />
-            </Link>
+              <Search className="w-4 h-4 text-gray-400" />
+              <span>Search articles...</span>
+              <kbd className="hidden lg:inline-block bg-gray-100 border border-gray-200 px-1.5 py-0.5 rounded text-[10px] font-mono text-gray-500">
+                ⌘K
+              </kbd>
+            </button>
           </div>
 
-          {/* Mobile Hamburger Toggle */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle Navigation Menu"
-            className="md:hidden w-11 h-11 rounded-2xl bg-white border border-gray-200 flex items-center justify-center text-gray-900 shadow-soft active:scale-95 transition-transform"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <MenuIcon className="w-5 h-5" />}
-          </button>
+          {/* Mobile Right Controls: Search Icon + Hamburger Toggle */}
+          <div className="flex items-center gap-2 md:hidden">
+            <button
+              onClick={() => setSearchModalOpen(true)}
+              aria-label="Search articles"
+              className="w-11 h-11 rounded-2xl bg-white border border-gray-200 flex items-center justify-center text-gray-900 shadow-soft active:scale-95 transition-transform"
+            >
+              <Search className="w-5 h-5 text-gray-700" />
+            </button>
+
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle Navigation Menu"
+              className="w-11 h-11 rounded-2xl bg-white border border-gray-200 flex items-center justify-center text-gray-900 shadow-soft active:scale-95 transition-transform"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <MenuIcon className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -119,14 +136,16 @@ export default function Header({ navItems = MOCK_HEADER_MENU }: HeaderProps) {
               transition={{ delay: 0.2 }}
               className="flex flex-col gap-4"
             >
-              <Link
-                href="#newsletter"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full bg-[#BEF264] text-[#111827] font-bold text-center py-4 rounded-2xl shadow-soft text-lg flex items-center justify-center gap-2"
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setSearchModalOpen(true);
+                }}
+                className="w-full bg-white border border-gray-200 text-[#111827] font-bold text-center py-4 rounded-2xl shadow-soft text-base flex items-center justify-center gap-2"
               >
-                <span>Get Started</span>
-                <Sparkles className="w-5 h-5" />
-              </Link>
+                <Search className="w-5 h-5" />
+                <span>Search Publications</span>
+              </button>
               <p className="text-xs text-center text-gray-500">
                 © 2026 AiRooms. WordPress Headless Architecture.
               </p>
@@ -134,6 +153,13 @@ export default function Header({ navItems = MOCK_HEADER_MENU }: HeaderProps) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Instant Search Modal */}
+      <SearchModal
+        isOpen={searchModalOpen}
+        onClose={() => setSearchModalOpen(false)}
+        posts={posts}
+      />
     </>
   );
 }

@@ -55,7 +55,7 @@ export default async function SingleArticlePage({ params }: PageProps) {
   if (!post) {
     return (
       <div className="min-h-[100dvh] bg-[#F9FAFB] flex flex-col justify-between">
-        <Header navItems={headerMenu} />
+        <Header navItems={headerMenu} posts={allPosts} />
         <div className="max-w-4xl mx-auto px-6 py-40 text-center">
           <h1 className="text-4xl font-extrabold text-[#111827] mb-4">Article Not Found</h1>
           <p className="text-gray-600 mb-8">The requested publication could not be found.</p>
@@ -76,7 +76,7 @@ export default async function SingleArticlePage({ params }: PageProps) {
 
   return (
     <div className="min-h-[100dvh] bg-[#F9FAFB] flex flex-col justify-between">
-      <Header navItems={headerMenu} />
+      <Header navItems={headerMenu} posts={allPosts} />
 
       <main className="flex-grow pt-32 pb-24">
         {/* Top Breadcrumb Nav */}

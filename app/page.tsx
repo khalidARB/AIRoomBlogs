@@ -23,7 +23,7 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-[100dvh] bg-[#F9FAFB] flex flex-col justify-between">
-      <Header navItems={headerMenu} />
+      <Header navItems={headerMenu} posts={posts} />
 
       <main className="flex-grow">
         {featuredPost && <HeroFeatured post={featuredPost} />}
