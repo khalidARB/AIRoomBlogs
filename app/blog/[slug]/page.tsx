@@ -3,6 +3,9 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ShareButtons from '@/components/ShareButtons';
+import ReadingProgressBar from '@/components/ReadingProgressBar';
+import TableOfContents from '@/components/TableOfContents';
+import ArticleBody from '@/components/ArticleBody';
 import { getPostBySlug, getAllPosts, getCategories, getMenu } from '@/lib/wordpress';
 import { Calendar, Clock, ArrowLeft, ArrowUpRight, Sparkles } from 'lucide-react';
 
@@ -76,6 +79,9 @@ export default async function SingleArticlePage({ params }: PageProps) {
 
   return (
     <div className="min-h-[100dvh] bg-[#F9FAFB] flex flex-col justify-between">
+      {/* Scroll Progress Indicator Bar */}
+      <ReadingProgressBar />
+
       <Header navItems={headerMenu} posts={allPosts} />
 
       <main className="flex-grow pt-32 pb-24">
@@ -98,7 +104,7 @@ export default async function SingleArticlePage({ params }: PageProps) {
               {post.categories.map((cat, idx) => (
                 <span
                   key={idx}
-                  className="bg-[#BEF264] text-[#111827] text-xs font-extrabold px-3.5 py-1 rounded-full"
+                  className="bg-[#BEF264] text-[#111827] text-xs font-extrabold px-3.5 py-1 rounded-full shadow-xs"
                 >
                   {cat.name}
                 </span>
@@ -127,54 +133,56 @@ export default async function SingleArticlePage({ params }: PageProps) {
 
           {/* Main Layout: Sticky Desktop Sidebar + Reading Column */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 relative">
-            {/* Desktop Sticky Left Sidebar */}
-            <aside className="lg:col-span-3">
-              <div className="lg:sticky lg:top-32 flex flex-col gap-8 bg-white p-6 rounded-3xl border border-gray-200/80 shadow-soft">
-                {/* Author Information */}
-                <div className="flex items-center gap-3">
-                  <img
-                    src={post.author.avatarUrl}
-                    alt={post.author.name}
-                    className="w-12 h-12 rounded-full object-cover border-2 border-gray-100 shadow-sm"
-                  />
-                  <div>
-                    <h4 className="text-sm font-bold text-[#111827]">{post.author.name}</h4>
-                    <p className="text-xs text-gray-500 font-medium">{post.author.role}</p>
+            {/* Desktop Sticky Left Sidebar (Author + Table of Contents + Social Share) */}
+            <aside className="lg:col-span-4">
+              <div className="lg:sticky lg:top-28 flex flex-col gap-6">
+                {/* Author Information Card */}
+                <div className="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-soft flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={post.author.avatarUrl}
+                      alt={post.author.name}
+                      className="w-12 h-12 rounded-full object-cover border-2 border-gray-100 shadow-sm"
+                    />
+                    <div>
+                      <h4 className="text-sm font-bold text-[#111827]">{post.author.name}</h4>
+                      <p className="text-xs text-gray-500 font-medium">{post.author.role}</p>
+                    </div>
                   </div>
+
+                  <div className="h-px bg-gray-100"></div>
+
+                  {/* Article Meta details */}
+                  <div className="space-y-2.5 text-xs text-gray-500 font-medium">
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-1.5 text-gray-400">
+                        <Calendar className="w-4 h-4" /> Published
+                      </span>
+                      <span className="font-bold text-gray-800">{post.date}</span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-1.5 text-gray-400">
+                        <Clock className="w-4 h-4" /> Reading time
+                      </span>
+                      <span className="font-bold text-gray-800">{post.readTime}</span>
+                    </div>
+                  </div>
+
+                  <div className="h-px bg-gray-100"></div>
+
+                  {/* Social Sharing Actions */}
+                  <ShareButtons title={post.title} />
                 </div>
 
-                <div className="h-px bg-gray-100"></div>
-
-                {/* Article Meta details */}
-                <div className="space-y-3 text-xs text-gray-500 font-medium">
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1.5 text-gray-400">
-                      <Calendar className="w-4 h-4" /> Published
-                    </span>
-                    <span className="font-bold text-gray-800">{post.date}</span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1.5 text-gray-400">
-                      <Clock className="w-4 h-4" /> Reading time
-                    </span>
-                    <span className="font-bold text-gray-800">{post.readTime}</span>
-                  </div>
-                </div>
-
-                <div className="h-px bg-gray-100"></div>
-
-                {/* Social Sharing Actions */}
-                <ShareButtons title={post.title} />
+                {/* Table of Contents Sticky Component */}
+                <TableOfContents content={post.content} />
               </div>
             </aside>
 
             {/* Reading Column (Narrow max 68ch UX) */}
-            <div className="lg:col-span-9 max-w-[68ch]">
-              <div
-                className="prose prose-lg max-w-none text-[#111827] leading-relaxed font-normal"
-                dangerouslySetInnerHTML={{ __html: post.content }}
-              />
+            <div className="lg:col-span-8 max-w-[68ch]">
+              <ArticleBody content={post.content} />
 
               {/* In-line Embedded Visual Element Showcase */}
               <div className="my-12 p-8 bg-white rounded-3xl border border-gray-200/80 shadow-soft">
