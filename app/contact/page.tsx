@@ -13,6 +13,7 @@ import {
   Sparkles,
   MessageSquare,
   Globe,
+  ChevronDown,
 } from 'lucide-react';
 
 export default function ContactPage() {
@@ -213,16 +214,19 @@ export default function ContactPage() {
                     <label className="block text-xs font-bold text-[#111827] dark:text-gray-200 uppercase tracking-wider mb-2">
                       Inquiry Subject
                     </label>
-                    <select
-                      value={formData.subject}
-                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      className="w-full bg-gray-50 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 focus:border-[#111827] dark:focus:border-[#BEF264] rounded-2xl px-4 py-3 text-sm text-[#111827] dark:text-white focus:outline-none transition-colors"
-                    >
-                      <option value="General Inquiry">General Inquiry</option>
-                      <option value="Editorial Partnership">Editorial Partnership</option>
-                      <option value="Press / Media">Press / Media</option>
-                      <option value="Tech Contribution">Technical Contribution</option>
-                    </select>
+                    <div className="relative">
+                      <select
+                        value={formData.subject}
+                        onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                        className="w-full bg-gray-50 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 focus:border-[#111827] dark:focus:border-[#BEF264] rounded-2xl px-4 pr-10 py-3 text-sm text-[#111827] dark:text-white focus:outline-none transition-colors appearance-none cursor-pointer"
+                      >
+                        <option value="General Inquiry" className="bg-white dark:bg-neutral-900 text-[#111827] dark:text-white">General Inquiry</option>
+                        <option value="Editorial Partnership" className="bg-white dark:bg-neutral-900 text-[#111827] dark:text-white">Editorial Partnership</option>
+                        <option value="Press / Media" className="bg-white dark:bg-neutral-900 text-[#111827] dark:text-white">Press / Media</option>
+                        <option value="Tech Contribution" className="bg-white dark:bg-neutral-900 text-[#111827] dark:text-white">Technical Contribution</option>
+                      </select>
+                      <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
                   </div>
 
                   {/* Message Field */}
