@@ -45,19 +45,19 @@ export default function Header({ navItems = MOCK_HEADER_MENU, posts }: HeaderPro
             <span className="w-9 h-9 rounded-xl bg-[#BEF264] flex items-center justify-center font-extrabold text-[#111827] text-base shadow-soft group-hover:scale-105 transition-transform duration-200">
               Ai
             </span>
-            <span className="font-extrabold text-xl tracking-tight text-[#111827]">
-              Ai<span className="text-[#111827]">Rooms</span>
+            <span className="font-extrabold text-xl tracking-tight text-[#111827] dark:text-white">
+              Ai<span className="text-[#111827] dark:text-white">Rooms</span>
               <span className="inline-block w-2 h-2 rounded-full bg-[#BEF264] ml-1"></span>
             </span>
           </Link>
 
           {/* Desktop Navigation - Managed via WP Dashboard */}
-          <nav className="hidden md:flex items-center gap-8 bg-white/80 backdrop-blur-md px-6 py-2.5 rounded-full border border-gray-200/60 shadow-soft">
+          <nav className="hidden md:flex items-center gap-8 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md px-6 py-2.5 rounded-full border border-gray-200/60 dark:border-neutral-800 shadow-soft">
             {navItems.map((item) => (
               <Link
                 key={item.id}
                 href={item.url || '#'}
-                className="relative text-sm font-medium text-gray-700 hover:text-[#111827] transition-colors py-1 group"
+                className="relative text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-[#111827] dark:hover:text-white transition-colors py-1 group"
               >
                 {item.label}
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#BEF264] transition-all duration-200 group-hover:w-full"></span>
@@ -97,7 +97,7 @@ export default function Header({ navItems = MOCK_HEADER_MENU, posts }: HeaderPro
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle Navigation Menu"
-              className="w-11 h-11 rounded-2xl bg-white border border-gray-200 flex items-center justify-center text-gray-900 shadow-soft active:scale-95 transition-transform"
+              className="w-11 h-11 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 flex items-center justify-center text-gray-900 dark:text-white shadow-soft active:scale-95 transition-transform"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <MenuIcon className="w-5 h-5" />}
             </button>
@@ -113,7 +113,7 @@ export default function Header({ navItems = MOCK_HEADER_MENU, posts }: HeaderPro
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-40 bg-[#F9FAFB]/95 backdrop-blur-xl flex flex-col justify-between p-8 pt-28 md:hidden"
+            className="fixed inset-0 z-40 bg-[#F9FAFB]/95 dark:bg-neutral-950/95 backdrop-blur-xl flex flex-col justify-between p-8 pt-28 md:hidden"
           >
             <div className="flex flex-col gap-6">
               {navItems.map((item, idx) => (
@@ -126,7 +126,7 @@ export default function Header({ navItems = MOCK_HEADER_MENU, posts }: HeaderPro
                   <Link
                     href={item.url || '#'}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="text-3xl font-extrabold text-[#111827] hover:text-lime-600 transition-colors flex items-center justify-between border-b border-gray-200/60 pb-4"
+                    className="text-3xl font-extrabold text-[#111827] dark:text-white hover:text-lime-500 transition-colors flex items-center justify-between border-b border-gray-200/60 dark:border-neutral-800 pb-4"
                   >
                     <span>{item.label}</span>
                     <ArrowUpRight className="w-6 h-6 text-gray-400" />
@@ -146,12 +146,12 @@ export default function Header({ navItems = MOCK_HEADER_MENU, posts }: HeaderPro
                   setMobileMenuOpen(false);
                   setSearchModalOpen(true);
                 }}
-                className="w-full bg-white border border-gray-200 text-[#111827] font-bold text-center py-4 rounded-2xl shadow-soft text-base flex items-center justify-center gap-2"
+                className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-[#111827] dark:text-white font-bold text-center py-4 rounded-2xl shadow-soft text-base flex items-center justify-center gap-2"
               >
                 <Search className="w-5 h-5" />
                 <span>Search Publications</span>
               </button>
-              <p className="text-xs text-center text-gray-500">
+              <p className="text-xs text-center text-gray-500 dark:text-gray-400">
                 © 2026 AiRooms. WordPress Headless Architecture.
               </p>
             </motion.div>

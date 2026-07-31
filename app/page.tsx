@@ -22,7 +22,7 @@ export default async function HomePage() {
   const remainingPosts = posts.slice(1);
 
   return (
-    <div className="min-h-[100dvh] bg-[#F9FAFB] flex flex-col justify-between">
+    <div className="min-h-[100dvh] bg-[#F9FAFB] dark:bg-[#0A0A0A] flex flex-col justify-between">
       <Header navItems={headerMenu} posts={posts} />
 
       <main className="flex-grow">

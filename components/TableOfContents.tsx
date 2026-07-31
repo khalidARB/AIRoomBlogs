@@ -77,9 +77,9 @@ export default function TableOfContents({ content }: TableOfContentsProps) {
   };
 
   return (
-    <div className="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-soft">
-      <h5 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-1.5">
-        <List className="w-4 h-4 text-[#111827]" /> Table of Contents
+    <div className="bg-white dark:bg-neutral-900 p-6 rounded-3xl border border-gray-200/80 dark:border-neutral-800 shadow-soft">
+      <h5 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-1.5">
+        <List className="w-4 h-4 text-[#111827] dark:text-white" /> Table of Contents
       </h5>
 
       <nav className="space-y-1.5">
@@ -94,12 +94,12 @@ export default function TableOfContents({ content }: TableOfContentsProps) {
               } ${
                 isActive
                   ? 'bg-[#BEF264] text-[#111827] font-bold shadow-xs'
-                  : 'text-gray-600 hover:text-[#111827] hover:bg-gray-50'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-[#111827] dark:hover:text-white hover:bg-gray-50 dark:hover:bg-neutral-800'
               }`}
             >
               <ChevronRight
                 className={`w-3.5 h-3.5 shrink-0 transition-transform ${
-                  isActive ? 'translate-x-0.5 text-[#111827]' : 'text-gray-300'
+                  isActive ? 'translate-x-0.5 text-[#111827]' : 'text-gray-300 dark:text-gray-600'
                 }`}
               />
               <span className="truncate">{heading.text}</span>

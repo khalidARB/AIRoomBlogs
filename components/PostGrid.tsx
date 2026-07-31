@@ -35,7 +35,7 @@ export default function PostGrid({ posts }: PostGridProps) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.5, delay: (idx % 3) * 0.1 }}
-              className={`bg-white rounded-3xl p-6 border border-gray-200/80 shadow-soft hover:shadow-soft-lg group transition-all duration-300 flex flex-col justify-between ${
+              className={`bg-white dark:bg-neutral-900 rounded-3xl p-6 border border-gray-200/80 dark:border-neutral-800 shadow-soft hover:shadow-soft-lg group transition-all duration-300 flex flex-col justify-between ${
                 isWideCard ? 'lg:col-span-2' : ''
               }`}
             >
@@ -43,7 +43,7 @@ export default function PostGrid({ posts }: PostGridProps) {
                 {/* Image Container with Hover Zoom */}
                 <Link
                   href={`/blog/${post.slug}`}
-                  className="block overflow-hidden rounded-2xl mb-6 relative aspect-[16/10] bg-gray-100"
+                  className="block overflow-hidden rounded-2xl mb-6 relative aspect-[16/10] bg-gray-100 dark:bg-neutral-800"
                 >
                   <motion.img
                     whileHover={{ scale: 1.05 }}
@@ -56,7 +56,7 @@ export default function PostGrid({ posts }: PostGridProps) {
                     {post.categories.map((cat, cIdx) => (
                       <span
                         key={cIdx}
-                        className="bg-white/90 backdrop-blur-md text-[#111827] text-xs font-bold px-3 py-1 rounded-full border border-gray-200/50 shadow-sm"
+                        className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md text-[#111827] dark:text-white text-xs font-bold px-3 py-1 rounded-full border border-gray-200/50 dark:border-neutral-700/50 shadow-sm"
                       >
                         {cat.name}
                       </span>
@@ -65,14 +65,14 @@ export default function PostGrid({ posts }: PostGridProps) {
                 </Link>
 
                 {/* Article Meta */}
-                <div className="flex items-center gap-3 text-xs text-gray-500 mb-3 font-medium">
+                <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 mb-3 font-medium">
                   <span className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 text-gray-400" />
+                    <Calendar className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
                     {post.date}
                   </span>
                   <span>•</span>
                   <span className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-gray-400" />
+                    <Clock className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
                     {post.readTime}
                   </span>
                 </div>
@@ -80,7 +80,7 @@ export default function PostGrid({ posts }: PostGridProps) {
                 {/* Title */}
                 <Link href={`/blog/${post.slug}`} className="group/title">
                   <h3
-                    className={`font-bold text-[#111827] tracking-tight leading-snug mb-3 group-hover/title:text-lime-600 transition-colors ${
+                    className={`font-bold text-[#111827] dark:text-white tracking-tight leading-snug mb-3 group-hover/title:text-lime-500 transition-colors ${
                       isWideCard ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'
                     }`}
                   >
@@ -89,26 +89,26 @@ export default function PostGrid({ posts }: PostGridProps) {
                 </Link>
 
                 {/* Excerpt */}
-                <p className="text-gray-600 text-sm leading-relaxed mb-6 line-clamp-2">
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-6 line-clamp-2">
                   {post.excerpt}
                 </p>
               </div>
 
               {/* Card Footer: Author & Action Button */}
-              <div className="pt-4 border-t border-gray-100 flex items-center justify-between mt-auto">
+              <div className="pt-4 border-t border-gray-100 dark:border-neutral-800 flex items-center justify-between mt-auto">
                 <div className="flex items-center gap-3">
                   <img
                     src={post.author.avatarUrl}
                     alt={post.author.name}
-                    className="w-9 h-9 rounded-full object-cover border border-gray-200"
+                    className="w-9 h-9 rounded-full object-cover border border-gray-200 dark:border-neutral-700"
                   />
-                  <span className="text-xs font-bold text-gray-800">{post.author.name}</span>
+                  <span className="text-xs font-bold text-gray-800 dark:text-gray-200">{post.author.name}</span>
                 </div>
 
                 <Link
                   href={`/blog/${post.slug}`}
                   aria-label={`Read ${post.title}`}
-                  className="w-9 h-9 rounded-full bg-gray-100 group-hover:bg-[#BEF264] text-[#111827] flex items-center justify-center transition-all duration-200 group-hover:scale-105"
+                  className="w-9 h-9 rounded-full bg-gray-100 dark:bg-neutral-800 group-hover:bg-[#BEF264] text-[#111827] dark:text-white dark:group-hover:text-[#111827] flex items-center justify-center transition-all duration-200 group-hover:scale-105"
                 >
                   <ArrowUpRight className="w-4 h-4" />
                 </Link>
@@ -123,7 +123,7 @@ export default function PostGrid({ posts }: PostGridProps) {
         <div className="mt-16 text-center">
           <button
             onClick={handleLoadMore}
-            className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 border-2 border-[#111827] text-[#111827] font-bold px-8 py-4 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 shadow-soft"
+            className="inline-flex items-center gap-2 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-800 border-2 border-[#111827] dark:border-white text-[#111827] dark:text-white font-bold px-8 py-4 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 shadow-soft cursor-pointer"
           >
             <span>Load More Articles</span>
             <ArrowUpRight className="w-4 h-4" />

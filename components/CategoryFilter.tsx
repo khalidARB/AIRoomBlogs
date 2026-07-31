@@ -15,8 +15,8 @@ export default function CategoryFilter({
 }: CategoryFilterProps) {
   return (
     <section className="px-6 sm:px-8 max-w-7xl mx-auto py-6">
-      <div className="flex items-center justify-between border-b border-gray-200/80 pb-6 mb-8 flex-wrap gap-4">
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-[#111827] tracking-tight">
+      <div className="flex items-center justify-between border-b border-gray-200/80 dark:border-neutral-800 pb-6 mb-8 flex-wrap gap-4">
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-[#111827] dark:text-white tracking-tight">
           Latest Publications
         </h2>
 
@@ -31,7 +31,7 @@ export default function CategoryFilter({
                 className={`relative px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer ${
                   isActive
                     ? 'text-[#111827]'
-                    : 'text-gray-600 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-800 border border-gray-200 dark:border-neutral-800'
                 }`}
               >
                 {isActive && (

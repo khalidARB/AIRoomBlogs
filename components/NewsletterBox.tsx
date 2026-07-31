@@ -39,26 +39,26 @@ export default function NewsletterBox() {
   };
 
   return (
-    <div className="mt-16 p-8 sm:p-10 bg-[#BEF264]/15 rounded-3xl border border-[#BEF264]/40 shadow-soft">
+    <div className="mt-16 p-8 sm:p-10 bg-[#BEF264]/15 dark:bg-[#BEF264]/10 rounded-3xl border border-[#BEF264]/40 dark:border-[#BEF264]/30 shadow-soft">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="max-w-md">
-          <h3 className="text-xl sm:text-2xl font-extrabold text-[#111827] mb-2">
+          <h3 className="text-xl sm:text-2xl font-extrabold text-[#111827] dark:text-white mb-2">
             Enjoyed this publication?
           </h3>
-          <p className="text-gray-600 text-sm leading-relaxed">
+          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
             Subscribe to receive strategic articles and tech insights straight to your inbox.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="w-full md:w-auto flex-grow max-w-md">
-          <div className="flex items-center bg-white border border-gray-300 focus-within:border-[#111827] rounded-full p-1.5 shadow-sm transition-all">
+          <div className="flex items-center bg-white dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 focus-within:border-[#111827] dark:focus-within:border-[#BEF264] rounded-full p-1.5 shadow-sm transition-all">
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               disabled={status === 'loading' || status === 'success'}
-              className="bg-transparent text-sm text-[#111827] px-4 py-2 focus:outline-none w-full placeholder-gray-400 font-medium"
+              className="bg-transparent text-sm text-[#111827] dark:text-white px-4 py-2 focus:outline-none w-full placeholder-gray-400 dark:placeholder-gray-500 font-medium"
             />
             <button
               type="submit"
