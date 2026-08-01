@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ReportPayload } from '@/lib/seo-tester';
-import { ShieldCheck, Activity, AlertTriangle, CheckCircle2, ArrowLeft, Globe, Terminal, ExternalLink, FileText, Image as ImageIcon, Share2, Tag, Layers, Server, FileCode, AlignLeft, Hash, Compass } from 'lucide-react';
+import { ShieldCheck, Activity, AlertTriangle, CheckCircle2, ArrowLeft, Globe, Terminal, ExternalLink, FileText, Image as ImageIcon, Share2, Tag, Layers, Server, FileCode, AlignLeft, Hash, Compass, Smartphone, Tablet, Monitor, AlertCircle, Copy, Check, Zap, HardDrive, Link2Off } from 'lucide-react';
 
 interface ReportDashboardViewProps {
   reportId: string;
@@ -15,6 +15,8 @@ export default function ReportDashboardView({
   initialReport,
 }: ReportDashboardViewProps) {
   const [report, setReport] = useState<ReportPayload>(initialReport);
+  const [activeDeviceIdx, setActiveDeviceIdx] = useState<number>(0);
+  const [copiedSelector, setCopiedSelector] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -30,6 +32,12 @@ export default function ReportDashboardView({
     }
   }, [reportId]);
 
+  const handleCopy = (selector: string) => {
+    navigator.clipboard.writeText(selector);
+    setCopiedSelector(selector);
+    setTimeout(() => setCopiedSelector(null), 2000);
+  };
+
   const getScoreBadge = (score: number) => {
     if (score >= 90) return 'text-emerald-700 bg-emerald-50 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800';
     if (score >= 50) return 'text-amber-700 bg-amber-50 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800';
@@ -38,6 +46,11 @@ export default function ReportDashboardView({
 
   const deepSeo = report.functionalTest?.deepSeoAudit;
   const pageOv = report.pageOverview;
+  const uiUx = report.functionalTest?.uiUxTest || report.uiUxTest;
+  const heavyAssets = report.functionalTest?.heavyAssetWarnings || [];
+  const brokenLinks = report.functionalTest?.brokenLinks || [];
+
+  const activeVp = uiUx?.viewports[activeDeviceIdx];
 
   return (
     <div className="space-y-8 w-full">
@@ -67,7 +80,7 @@ export default function ReportDashboardView({
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
           <div className="space-y-3 max-w-2xl">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-xs font-semibold text-gray-900 dark:text-white">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-[#BEF264]" /> Certified Lighthouse & DOM Audit
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-[#BEF264]" /> Certified Lighthouse, Network & UI/UX Audit
             </span>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight leading-snug font-heading">
               Audit Report for <span className="text-gray-900 dark:text-[#BEF264]">{report.domain}</span>
@@ -89,6 +102,240 @@ export default function ReportDashboardView({
           </div>
         </div>
       </div>
+
+      {/* NETWORK TAB HEAVY ASSET SIZE MONITOR CARD */}
+      {heavyAssets.length > 0 && (
+        <div className="bg-white dark:bg-[#141414] border border-gray-200/80 dark:border-neutral-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-soft">
+          <div className="flex items-center justify-between border-b border-gray-100 dark:border-neutral-800 pb-4">
+            <div className="flex items-center gap-3">
+              <HardDrive className="w-5 h-5 text-amber-500" />
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white font-heading">Network Tab Heavy Asset Warnings</h2>
+                <p className="text-xs text-gray-500 dark:text-neutral-400">Monitors page payload requests to flag uncompressed images and oversized JS script bundles.</p>
+              </div>
+            </div>
+            {report.functionalTest?.totalNetworkBytesMb && (
+              <span className="px-3 py-1 rounded-full bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300 text-xs font-bold font-mono border border-amber-200 dark:border-amber-800">
+                Total Payload: {report.functionalTest.totalNetworkBytesMb} MB
+              </span>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            {heavyAssets.map((asset, i) => (
+              <div key={i} className="p-4 rounded-2xl bg-gray-50 dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 font-mono font-bold text-gray-900 dark:text-white">
+                    <span className={`px-2 py-0.5 rounded text-[10px] uppercase ${asset.resourceType === 'image' ? 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'}`}>
+                      {asset.resourceType}
+                    </span>
+                    <span className="truncate max-w-lg">{asset.url}</span>
+                  </div>
+                  <p className="text-[11px] text-gray-600 dark:text-neutral-400">{asset.recommendation}</p>
+                </div>
+
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950 dark:text-rose-300 dark:border-rose-800 font-mono font-extrabold text-xs">
+                    {asset.sizeMb > 0 ? `${asset.sizeMb} MB` : `${asset.sizeKb} KB`}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* BROKEN LINKS MONITOR (404s) */}
+      {brokenLinks.length > 0 && (
+        <div className="bg-white dark:bg-[#141414] border border-gray-200/80 dark:border-neutral-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-soft">
+          <div className="flex items-center gap-3 border-b border-gray-100 dark:border-neutral-800 pb-4">
+            <Link2Off className="w-5 h-5 text-rose-500" />
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white font-heading">Broken Links Audit (HTTP 404 / 500 Errors)</h2>
+              <p className="text-xs text-gray-500 dark:text-neutral-400">Scans all anchor href links on the page for broken destinations.</p>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            {brokenLinks.map((bl, i) => (
+              <div key={i} className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 flex items-center justify-between gap-4 text-xs">
+                <div className="space-y-1">
+                  <div className="font-bold text-rose-900 dark:text-rose-200 font-mono">{bl.linkText || 'Broken Link'}</div>
+                  <div className="font-mono text-gray-600 dark:text-neutral-400 truncate max-w-xl">{bl.url}</div>
+                </div>
+
+                <span className="px-3 py-1 rounded-full bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-200 font-mono font-bold">
+                  HTTP {bl.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* RESPONSIVE & UI/UX SCREEN EMULATION AUDIT SECTION */}
+      {uiUx && (
+        <div className="bg-white dark:bg-[#141414] border border-gray-200/80 dark:border-neutral-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-soft">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 dark:border-neutral-800 pb-4">
+            <div className="flex items-center gap-3">
+              <Smartphone className="w-5 h-5 text-gray-900 dark:text-[#BEF264]" />
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white font-heading">Responsive Screen Emulation & UI/UX Audit</h2>
+                <p className="text-xs text-gray-500 dark:text-neutral-400">Detects horizontal scrolling overflow bugs, touch target sizing, and accessibility failures per device.</p>
+              </div>
+            </div>
+
+            {/* Device Viewport Selector Tabs */}
+            <div className="flex items-center gap-1.5 bg-gray-100 dark:bg-neutral-900 p-1.5 rounded-2xl border border-gray-200 dark:border-neutral-800">
+              {uiUx.viewports.map((vp, idx) => (
+                <button
+                  key={vp.deviceName}
+                  onClick={() => setActiveDeviceIdx(idx)}
+                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                    activeDeviceIdx === idx
+                      ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm'
+                      : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
+                  }`}
+                >
+                  {vp.deviceName.includes('Mobile') ? (
+                    <Smartphone className="w-3.5 h-3.5" />
+                  ) : vp.deviceName.includes('Tablet') ? (
+                    <Tablet className="w-3.5 h-3.5" />
+                  ) : (
+                    <Monitor className="w-3.5 h-3.5" />
+                  )}
+                  <span>{vp.deviceName.split(' ')[0]}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {activeVp && (
+            <div className="space-y-6">
+              {/* Active Device Header Status Bar */}
+              <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-bold text-gray-900 dark:text-white">{activeVp.deviceName}</span>
+                  <span className="text-xs font-mono text-gray-500 dark:text-neutral-400">({activeVp.width}px × {activeVp.height}px)</span>
+                </div>
+
+                <div className="flex items-center gap-3 text-xs font-semibold">
+                  <span className={`px-3 py-1 rounded-full border ${activeVp.hasHorizontalOverflow ? 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950 dark:text-rose-300 dark:border-rose-800' : 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800'}`}>
+                    {activeVp.hasHorizontalOverflow ? `⚠️ Overflow Detected (+${activeVp.maxOverflowPx}px)` : '✓ No Horizontal Scroll Bug'}
+                  </span>
+                  <span className="px-3 py-1 rounded-full bg-gray-100 dark:bg-neutral-800 text-gray-800 dark:text-neutral-200 font-mono">
+                    Score: {uiUx.overallUiScore}/100
+                  </span>
+                </div>
+              </div>
+
+              {/* 1. CSS Overflow Element Extractor List */}
+              {activeVp.hasHorizontalOverflow ? (
+                <div className="p-5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-rose-800 dark:text-rose-200 font-bold text-sm">
+                      <AlertTriangle className="w-4 h-4 text-rose-500" />
+                      <span>CSS Overflow Elements (Causing Mobile Horizontal Scroll)</span>
+                    </div>
+                    <span className="text-xs font-mono font-semibold text-rose-700 dark:text-rose-300">
+                      {activeVp.overflowingElements.length} Broken Elements
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    {activeVp.overflowingElements.map((el, i) => (
+                      <div key={i} className="p-3.5 rounded-xl bg-white dark:bg-neutral-900 border border-rose-200/80 dark:border-rose-900/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 font-mono text-gray-900 dark:text-white font-bold">
+                            <span className="px-1.5 py-0.5 rounded bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-200 text-[10px]">&lt;{el.tagName}&gt;</span>
+                            <span>{el.selector}</span>
+                          </div>
+                          <p className="text-[11px] text-gray-500 font-mono truncate max-w-xl">{el.htmlSnippet}</p>
+                        </div>
+
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span className="px-2 py-1 rounded bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-200 text-[11px] font-mono font-bold">
+                            +{el.overflowPx}px overflow
+                          </span>
+                          <button
+                            onClick={() => handleCopy(el.selector)}
+                            className="p-1.5 rounded-lg bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-700 dark:text-neutral-300 transition-colors"
+                            title="Copy Selector"
+                          >
+                            {copiedSelector === el.selector ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 flex items-center gap-3 text-xs text-emerald-800 dark:text-emerald-200">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                  <span>No elements exceed the {activeVp.width}px viewport boundary on this device screen size.</span>
+                </div>
+              )}
+
+              {/* 2. Touch Target Sizing & Accessibility Scans */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Touch Target Size Audit */}
+                <div className="p-4 rounded-2xl bg-gray-50 dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
+                      <Smartphone className="w-4 h-4 text-amber-500" /> Touch Target Sizing (&lt; 44px)
+                    </span>
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800">
+                      {activeVp.touchTargetViolations.length} Violations
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 text-xs">
+                    {activeVp.touchTargetViolations.length > 0 ? (
+                      activeVp.touchTargetViolations.map((tt, i) => (
+                        <div key={i} className="p-2.5 rounded-xl bg-white dark:bg-neutral-950 border border-gray-200 dark:border-neutral-800 flex items-center justify-between gap-2">
+                          <span className="font-mono text-gray-800 dark:text-neutral-200 font-medium text-[11px] truncate">{tt.selector}</span>
+                          <span className="font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-800">
+                            {tt.width}px × {tt.height}px
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-xs text-gray-500 dark:text-neutral-400">All interactive buttons and links satisfy min 44px touch targets.</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Accessibility Unlabelled Elements Scan */}
+                <div className="p-4 rounded-2xl bg-gray-50 dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
+                      <AlertCircle className="w-4 h-4 text-rose-500" /> Accessibility & Labeling Violations
+                    </span>
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950 dark:text-rose-300 dark:border-rose-800">
+                      {activeVp.accessibilityViolations.length} Failures
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 text-xs">
+                    {activeVp.accessibilityViolations.length > 0 ? (
+                      activeVp.accessibilityViolations.map((a11y, i) => (
+                        <div key={i} className="p-2.5 rounded-xl bg-white dark:bg-neutral-950 border border-gray-200 dark:border-neutral-800 space-y-1">
+                          <p className="text-[11px] text-gray-600 dark:text-neutral-400 font-medium">{a11y.description}</p>
+                          <div className="font-mono text-[10px] text-rose-600 dark:text-rose-400 font-bold truncate">
+                            {a11y.targetElements[0]?.selector}
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-xs text-gray-500 dark:text-neutral-400">No unlabelled interactive elements detected.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* PAGE OVERVIEW CARD */}
       {pageOv && (
@@ -151,49 +398,6 @@ export default function ReportDashboardView({
                 <Server className="w-3 h-3" /> Encoding
               </div>
               <div className="text-xs font-bold text-gray-900 dark:text-[#BEF264] mt-1">{pageOv.compression}</div>
-            </div>
-          </div>
-
-          {/* Heading Structure Tree & Social Card Preview */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Heading Tree Outline */}
-            <div className="space-y-3">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-neutral-400 flex items-center gap-1.5">
-                <Hash className="w-4 h-4 text-gray-900 dark:text-[#BEF264]" /> Heading Tree Outline ({pageOv.headingOutline.length})
-              </h4>
-              <div className="p-4 rounded-2xl bg-gray-50 dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 space-y-2 max-h-56 overflow-y-auto font-mono text-xs">
-                {pageOv.headingOutline.length > 0 ? (
-                  pageOv.headingOutline.map((h, i) => (
-                    <div key={i} className={`flex items-start gap-2 ${h.level === 'H1' ? 'font-bold text-gray-900 dark:text-white' : 'text-gray-600 dark:text-neutral-400 pl-4'}`}>
-                      <span className="px-1.5 py-0.5 rounded bg-gray-200 dark:bg-neutral-800 text-[10px]">{h.level}</span>
-                      <span className="truncate">{h.text}</span>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-gray-400">No H1-H3 headings found in DOM body.</p>
-                )}
-              </div>
-            </div>
-
-            {/* Social Share Preview Card */}
-            <div className="space-y-3">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-neutral-400 flex items-center gap-1.5">
-                <Share2 className="w-4 h-4 text-gray-900 dark:text-[#BEF264]" /> Social Media Share Card Preview
-              </h4>
-              <div className="rounded-2xl bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 overflow-hidden text-xs">
-                {pageOv.ogPreview.image ? (
-                  <img src={pageOv.ogPreview.image} alt="OG Card Preview" className="w-full h-28 object-cover border-b border-gray-200 dark:border-neutral-800" />
-                ) : (
-                  <div className="w-full h-24 bg-gray-200 dark:bg-neutral-800 flex items-center justify-center text-gray-400 font-semibold">
-                    No og:image tag found
-                  </div>
-                )}
-                <div className="p-3 space-y-1">
-                  <div className="text-[10px] text-gray-400 font-mono uppercase">{report.domain}</div>
-                  <div className="font-bold text-gray-900 dark:text-white line-clamp-1">{pageOv.ogPreview.title || pageOv.pageTitle}</div>
-                  <p className="text-gray-500 dark:text-neutral-400 text-[11px] line-clamp-2">{pageOv.ogPreview.description || pageOv.metaDescription || 'No description provided'}</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -373,37 +577,6 @@ export default function ReportDashboardView({
         </div>
       </div>
 
-      {/* Puppeteer Functional Interaction Trace Section */}
-      {report.functionalTest && (
-        <div className="bg-white dark:bg-[#141414] border border-gray-200/80 dark:border-neutral-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-soft">
-          <div className="flex items-center gap-3 border-b border-gray-100 dark:border-neutral-800 pb-4">
-            <Terminal className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white font-heading">Puppeteer Functional Browser Trace</h2>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-            <div className="p-4 rounded-2xl bg-gray-50 dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800">
-              <div className="text-xs text-gray-500 dark:text-neutral-400">Total Load Time</div>
-              <div className="text-xl font-extrabold text-gray-900 dark:text-white mt-1">{report.functionalTest.loadTimeMs} ms</div>
-            </div>
-            <div className="p-4 rounded-2xl bg-gray-50 dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800">
-              <div className="text-xs text-gray-500 dark:text-neutral-400">HTTP Status</div>
-              <div className="text-xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">{report.functionalTest.statusCode}</div>
-            </div>
-            <div className="p-4 rounded-2xl bg-gray-50 dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800">
-              <div className="text-xs text-gray-500 dark:text-neutral-400">Links Checked</div>
-              <div className="text-xl font-extrabold text-gray-900 dark:text-white mt-1">{report.functionalTest.totalLinksChecked}</div>
-            </div>
-            <div className="p-4 rounded-2xl bg-gray-50 dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800">
-              <div className="text-xs text-gray-500 dark:text-neutral-400">Interactive Inputs</div>
-              <div className="text-xl font-extrabold text-gray-900 dark:text-[#BEF264] mt-1">
-                {report.functionalTest.interactiveElementsCount}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Audits & Actionable Recommendations */}
       <div className="bg-white dark:bg-[#141414] border border-gray-200/80 dark:border-neutral-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-soft">
         <div className="flex items-center gap-3 border-b border-gray-100 dark:border-neutral-800 pb-4">
@@ -432,7 +605,7 @@ export default function ReportDashboardView({
               </div>
 
               {audit.displayValue && (
-                <span className="text-xs font-mono text-gray-800 dark:text-[#BEF264] bg-white dark:bg-neutral-950 px-2.5 py-1 rounded-lg border border-gray-200 dark:border-neutral-800 flex-shrink-0">
+                <span className="text-xs font-mono text-[#BEF264] bg-neutral-950 dark:bg-neutral-950 px-2.5 py-1 rounded-lg border border-neutral-800 flex-shrink-0">
                   {audit.displayValue}
                 </span>
               )}

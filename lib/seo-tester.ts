@@ -37,6 +37,57 @@ export interface DeepSeoAudit {
   robotsMeta: string | null;
 }
 
+export interface OverflowElement {
+  tagName: string;
+  selector: string;
+  overflowPx: number;
+  width: number;
+  htmlSnippet: string;
+}
+
+export interface AccessibilityViolation {
+  id: string;
+  impact: 'critical' | 'serious' | 'moderate' | 'minor';
+  description: string;
+  helpUrl?: string;
+  targetElements: { selector: string; htmlSnippet: string }[];
+}
+
+export interface ViewportAuditResult {
+  deviceName: 'Mobile (iPhone 13)' | 'Tablet (iPad Pro)' | 'Desktop (1080p)';
+  width: number;
+  height: number;
+  hasHorizontalOverflow: boolean;
+  maxOverflowPx: number;
+  overflowingElements: OverflowElement[];
+  touchTargetViolations: { selector: string; width: number; height: number; htmlSnippet: string }[];
+  accessibilityViolations: AccessibilityViolation[];
+}
+
+export interface UiUxTestResult {
+  status: 'completed' | 'failed' | 'simulated';
+  viewports: ViewportAuditResult[];
+  overallUiScore: number;
+  totalOverflowIssues: number;
+  totalSmallTouchTargets: number;
+  totalA11yViolations: number;
+}
+
+export interface HeavyAssetWarning {
+  url: string;
+  resourceType: 'image' | 'script' | 'stylesheet' | 'font' | 'other';
+  sizeMb: number;
+  sizeKb: number;
+  transferTimeMs?: number;
+  recommendation: string;
+}
+
+export interface BrokenLinkItem {
+  url: string;
+  status: number;
+  linkText?: string;
+}
+
 export interface FunctionalTestResult {
   status: 'completed' | 'failed' | 'simulated';
   pageTitle: string;
@@ -44,12 +95,15 @@ export interface FunctionalTestResult {
   statusCode: number;
   totalLinksChecked: number;
   brokenLinksCount: number;
-  brokenLinks: { url: string; status: number }[];
+  brokenLinks: BrokenLinkItem[];
   consoleErrors: string[];
   interactiveElementsCount: number;
+  heavyAssetWarnings?: HeavyAssetWarning[];
+  totalNetworkBytesMb?: number;
   screenshotUrl?: string;
   executionTimestamp: string;
   deepSeoAudit?: DeepSeoAudit;
+  uiUxTest?: UiUxTestResult;
 }
 
 export interface PageOverview {
@@ -90,6 +144,7 @@ export interface ReportPayload {
   audits: AuditItem[];
   functionalTest?: FunctionalTestResult;
   pageOverview?: PageOverview;
+  uiUxTest?: UiUxTestResult;
   recommendations: string[];
 }
 
