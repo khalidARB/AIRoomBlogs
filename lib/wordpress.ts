@@ -193,17 +193,17 @@ export const MOCK_POSTS: Post[] = [
 ];
 
 export const MOCK_HEADER_MENU: MenuItem[] = [
-  { id: 'm-1', label: 'Work', url: '#' },
-  { id: 'm-2', label: 'Services', url: '#' },
-  { id: 'm-3', label: 'About', url: '#' },
-  { id: 'm-4', label: 'Learn', url: '/' },
+  { id: 'm-1', label: 'Blogs', url: '/blog' },
+  { id: 'm-2', label: 'SEO Tool', url: '/' },
+  { id: 'm-3', label: 'About', url: '/about' },
+  { id: 'm-4', label: 'Contact', url: '/contact' },
 ];
 
 export const MOCK_FOOTER_MENU: MenuItem[] = [
-  { id: 'fm-1', label: 'Work', url: '#' },
-  { id: 'fm-2', label: 'Services', url: '#' },
-  { id: 'fm-3', label: 'About Us', url: '#' },
-  { id: 'fm-4', label: 'Blog Archive', url: '/' },
+  { id: 'fm-1', label: 'Blogs', url: '/blog' },
+  { id: 'fm-2', label: 'SEO Tool', url: '/' },
+  { id: 'fm-3', label: 'About Us', url: '/about' },
+  { id: 'fm-4', label: 'Contact', url: '/contact' },
 ];
 
 export const MOCK_CATEGORIES: Category[] = [
@@ -437,16 +437,24 @@ export async function getMenu(menuType: string = 'header'): Promise<MenuItem[]> 
 
   return items.map((item: any) => {
     let cleanUrl = item.url || '#';
-    try {
-      if (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://')) {
-        const urlObj = new URL(cleanUrl);
-        // Strip subdirectory prefix if present
-        let path = urlObj.pathname.replace(/^\/BlogsRoom/, '');
-        if (path === '/blogs' || path === '/blogs/') path = '/';
-        cleanUrl = path || '/';
+    const labelLower = (item.label || '').toLowerCase().trim();
+
+    if (labelLower === 'blogs' || labelLower === 'blog' || labelLower === 'articles') {
+      cleanUrl = '/blog';
+    } else {
+      try {
+        if (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://')) {
+          const urlObj = new URL(cleanUrl);
+          // Strip subdirectory prefix if present
+          let path = urlObj.pathname.replace(/^\/BlogsRoom/, '');
+          if (path === '/blogs' || path === '/blogs/' || path === '/blog' || path === '/blog/') {
+            path = '/blog';
+          }
+          cleanUrl = path || '/';
+        }
+      } catch {
+        // keep raw url if parsing fails
       }
-    } catch {
-      // keep raw url if parsing fails
     }
 
     return {

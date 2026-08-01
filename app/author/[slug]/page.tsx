@@ -94,7 +94,7 @@ export default async function AuthorArchivePage({ params }: PageProps) {
         <section className="max-w-7xl mx-auto px-6 sm:px-8 mb-12">
           {/* Breadcrumb */}
           <Link
-            href="/"
+            href="/blog"
             className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
